@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TCF Canada — Preparation Dashboard</title>
+<style>
+  :root{
+    --bg: #F6F6F2;
+    --surface: #FFFFFF;
+    --surface-2: #F1F0EA;
+    --border: #E5E2D9;
+    --border-strong: #D5D1C4;
+    --text: #1D1D1B;
+    --text-muted: #6E6A60;
+    --text-faint: #A6A29A;
+
+    --blue-deep: #16293F;
+    --blue: #1E3A5F;
+    --blue-tint: #EAF1FB;
+
+    --green: #16A34A;
+    --green-deep: #0E7A38;
+    --green-tint: #E8F6EC;
+
+    --gold: #D97706;
+    --gold-tint: #FDF2E3;
+
+    --rose: #DB2777;
+    --rose-tint: #FCEAF2;
+
+    --teal: #0D9488;
+    --teal-tint: #E7F5F3;
+
+    --red: #DC2626;
+    --red-tint: #FDECEA;
+
+    --purple: #7C3AED;
+    --purple-tint: #F1EBFD;
+
+    --radius: 10px;
+    --radius-sm: 7px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 2px rgba(20,20,18,0.06);
+    --shadow-md: 0 6px 20px rgba(20,20,18,0.08);
+    --shadow-lg: 0 14px 34px rgba(20,20,18,0.14);
+
+    --font-serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  }
+
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,h2,h3,h4{ font-family: var(--font-serif); font-weight: 400; margin: 0; color: var(--text); }
+  a{ color: inherit; }
+  button{ font-family: inherit; }
+  ::selection{ background: var(--green-tint); }
+  :focus-visible{ outline: 2px solid var(--blue); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+
+  .app{ display:flex; min-height:100vh; }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width: 244px;
+    flex-shrink:0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    padding: 24px 0;
+    position: sticky;
+    top:0;
+    height:100vh;
+  }
+  .brand{ padding: 0 22px 20px 22px; border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+  .brand .mark{ display:inline-flex; align-items:center; gap:8px; }
+  .brand .mark .bar{ width:4px; height:20px; background: linear-gradient(180deg, var(--blue), var(--red)); border-radius:2px; }
+  .brand-title{ font-family: var(--font-serif); font-size: 18px; letter-spacing: 0.5px; color: var(--blue-deep); }
+  .brand-sub{ font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.2px; margin-top: 4px; }
+
+  nav.navlist{ display:flex; flex-direction:column; gap:2px; padding: 4px 12px; flex:1; }
+  .navlink{
+    display:flex; align-items:center; gap:10px;
+    padding: 9px 10px;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    text-decoration:none;
+    font-size: 13.5px;
+    cursor:pointer;
+    border: 1px solid transparent;
+    background:transparent;
+    text-align:left;
+    width:100%;
+    transition: background .12s ease, color .12s ease;
+  }
+  .navlink svg{ width:16px; height:16px; flex-shrink:0; opacity:0.8; }
+  .navlink:hover{ background: var(--surface-2); color: var(--text); }
+  .navlink.active{ background: var(--green-tint); color: var(--green-deep); border-color: #CFE9D6; font-weight:600; }
+
+  .sidebar-foot{ padding: 14px 22px 0 22px; border-top: 1px solid var(--border); margin-top: 12px; display:flex; flex-direction:column; gap:10px; }
+  .streak-pill{ display:flex; align-items:center; gap:8px; font-size: 12.5px; color: var(--text-muted); }
+  .streak-flame{ font-size:16px; display:inline-block; transform-origin:center; }
+  .streak-flame.active{ animation: flamePulse 1.7s ease-in-out infinite; }
+  @keyframes flamePulse{ 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.18) rotate(-3deg); } }
+  .streak-num{ font-family: var(--font-mono); font-weight:800; color: var(--red); font-size:15px; }
+  .badge-pill{ display:flex; align-items:center; gap:8px; font-size:12.5px; color: var(--text-muted); }
+  .badge-pill .n{ font-family: var(--font-mono); font-weight:800; color: var(--gold); font-size:15px; }
+
+  /* ---------- Main ---------- */
+  .main{ flex:1; min-width:0; padding: 32px 40px 80px 40px; max-width: 1220px; }
+  .page{ display:none; }
+  .page.active{ display:block; animation: fadein .18s ease; }
+  @keyframes fadein{ from{opacity:0; transform: translateY(4px);} to{opacity:1; transform: translateY(0);} }
+
+  .page-head{ margin-bottom: 24px; }
+  .eyebrow{ font-size: 11px; text-transform:uppercase; letter-spacing: 1.2px; color: var(--text-faint); margin-bottom: 4px; }
+  .page-title{ font-size: 27px; color: var(--blue-deep); }
+  .page-desc{ color: var(--text-muted); font-size: 13px; margin-top:6px; max-width: 640px; }
+
+  /* ---------- Cards / grid ---------- */
+  .grid{ display:grid; gap: 16px; }
+  .grid-4{ grid-template-columns: repeat(4, 1fr); }
+  .grid-2{ grid-template-columns: repeat(2, 1fr); }
+  .grid-3{ grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 980px){ .grid-4{ grid-template-columns: repeat(2,1fr);} .grid-3{grid-template-columns: repeat(1,1fr);} }
+  @media (max-width: 640px){ .grid-4, .grid-2{ grid-template-columns: 1fr; } }
+
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 18px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow .15s ease, transform .15s ease;
+  }
+  .card.clickable{ cursor:pointer; }
+  .card.clickable:hover{ box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .card.accent-top{ border-top: 3px solid var(--accent, var(--blue)); border-top-left-radius: var(--radius); border-top-right-radius: var(--radius); }
+
+  .card-title-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .card-label{ font-size:12px; text-transform:uppercase; letter-spacing:0.8px; color: var(--text-muted); font-weight:600; }
+
+  .progress-track{ height: 7px; background: var(--surface-2); border-radius: 6px; overflow:hidden; margin: 10px 0 8px 0; }
+  .progress-fill{ height:100%; border-radius:6px; transition: width .5s cubic-bezier(.2,.8,.2,1); background: var(--accent, var(--blue)); }
+
+  .meta-row{ display:flex; justify-content:space-between; align-items:center; font-size:12.5px; color: var(--text-muted); }
+  .pct{ font-family: var(--font-mono); font-weight:700; color: var(--text); }
+
+  .level-chip{
+    display:inline-flex; align-items:center; gap:4px; padding: 3px 9px; border-radius: 20px;
+    font-family: var(--font-mono); font-size: 11.5px; font-weight:800;
+    letter-spacing: 0.3px;
+  }
+  .level-chip.na{ background: var(--surface-2); color: var(--text-faint); border:1px solid var(--border); font-weight:600; }
+
+  .level-path{ display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  .level-path .arrow{ color: var(--text-faint); font-size:13px; }
+  .level-path .tag{ font-size:10.5px; color: var(--text-muted); text-transform:uppercase; letter-spacing:0.4px; }
+
+  /* ---------- buttons ---------- */
+  .btn{
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    padding: 7px 13px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    cursor:pointer;
+    display:inline-flex; align-items:center; gap:6px;
+    transition: background .12s ease, transform .08s ease;
+  }
+  .btn:hover{ background: var(--surface-2); }
+  .btn:active{ transform: scale(0.97); }
+  .btn-primary{ background: var(--green); border-color: var(--green); color:#fff; font-weight:600; }
+  .btn-primary:hover{ background: var(--green-deep); }
+  .btn-danger{ color: var(--red); border-color: #F0C9C4; }
+  .btn-danger:hover{ background: var(--red-tint); }
+  .btn-icon{ width:32px; height:32px; padding:0; justify-content:center; }
+  .btn-sm{ padding: 5px 9px; font-size:12px; }
+  .btn[disabled]{ opacity:0.4; cursor:not-allowed; }
+
+  .complete-row{ display:flex; align-items:center; gap:8px; margin-top: 14px; }
+  .complete-row .btn-primary{ flex:1; justify-content:center; }
+
+  /* ---------- Ring gauge ---------- */
+  .ring-wrap{ position:relative; display:inline-flex; align-items:center; justify-content:center; }
+  .ring-svg circle.ring-progress{ transition: stroke-dashoffset 1.1s cubic-bezier(.16,.84,.44,1); }
+  .ring-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+
+  /* ---------- Hero ---------- */
+  .hero-panel{
+    background: linear-gradient(135deg, #FFFFFF 0%, var(--green-tint) 130%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 26px 28px;
+    display:flex; align-items:center; gap: 30px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow-md);
+  }
+  .hero-info{ flex:1; min-width:0; }
+  .rank-chip{
+    display:inline-flex; align-items:center; gap:6px;
+    background: var(--gold-tint); color: #92500A; border:1px solid #F1D8A9;
+    padding: 4px 11px; border-radius: 20px; font-size: 11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;
+    margin-bottom: 10px;
+  }
+  .hero-info h2{ font-size: 24px; color: var(--blue-deep); margin-bottom:4px; }
+  .hero-sub{ color: var(--text-muted); font-size: 13px; margin-bottom: 14px; }
+  .hero-streak-row{ display:flex; align-items:center; gap: 18px; flex-wrap:wrap; }
+  .hero-stat{ display:flex; align-items:center; gap:7px; font-size:13px; color: var(--text-muted); }
+  .hero-stat strong{ font-family: var(--font-mono); color: var(--text); font-size:15px; }
+  .hero-ring-num{ font-family: var(--font-mono); font-size: 30px; font-weight:800; color: var(--blue-deep); line-height:1; }
+  .hero-ring-of{ font-family: var(--font-mono); font-size: 12px; color: var(--text-faint); margin-top:2px; }
+  .hero-ring-pct{ font-size:11px; font-weight:700; color: var(--green-deep); margin-top:4px; letter-spacing:0.4px; }
+  @media (max-width: 720px){ .hero-panel{ flex-direction:column; align-items:flex-start; } }
+
+  .ticket-num{ font-family: var(--font-mono); font-size: 24px; font-weight:800; color: var(--text); line-height:1; }
+  .ticket-num small{ font-family: var(--font-mono); font-size: 14px; font-weight:400; color: var(--text-faint); }
+
+  /* ---------- Achievements ---------- */
+  .badges-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:12px; }
+  .badges-head .count{ font-family: var(--font-mono); font-size:12.5px; color: var(--text-muted); }
+  .badges-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(126px, 1fr)); gap: 12px; }
+  .badge-tile{
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 14px 10px; text-align:center; box-shadow: var(--shadow-sm);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .badge-tile.unlocked{ border-color: #F1D8A9; background: linear-gradient(180deg, #FFFDF8, #FFFFFF); }
+  .badge-tile.unlocked:hover{ transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .badge-tile.locked{ opacity: 0.5; filter: grayscale(0.6); }
+  .badge-icon{ font-size: 26px; margin-bottom: 6px; }
+  .badge-tile.unlocked .badge-icon{ animation: popIn .35s cubic-bezier(.2,1.4,.4,1); }
+  @keyframes popIn{ from{ transform: scale(.5); opacity:0; } to{ transform: scale(1); opacity:1; } }
+  .badge-title{ font-size: 11.5px; font-weight:700; color: var(--text); margin-bottom:3px; }
+  .badge-desc{ font-size: 10.5px; color: var(--text-muted); line-height:1.3; }
+
+  /* ---------- Tables ---------- */
+  table.datatable{ width:100%; border-collapse: collapse; font-size: 13px; }
+  table.datatable th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.6px; color: var(--text-muted); border-bottom: 1px solid var(--border); padding: 8px 10px; font-weight:700; }
+  table.datatable td{ padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align:middle; }
+  table.datatable tr:last-child td{ border-bottom:none; }
+  table.datatable td.num{ font-family: var(--font-mono); }
+  table.datatable tr:hover td{ background: var(--surface-2); }
+  .row-actions{ display:flex; gap:6px; justify-content:flex-end; }
+  .empty-row td{ text-align:center; color: var(--text-faint); padding: 22px 10px; }
+
+  .section-block{ margin-top: 28px; }
+  .section-block-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .section-block-head h3{ font-size:16px; color: var(--blue-deep); }
+
+  /* ---------- Modal ---------- */
+  .overlay{ position:fixed; inset:0; background: rgba(20,20,18,0.4); display:none; align-items:center; justify-content:center; z-index: 100; padding: 20px; }
+  .overlay.active{ display:flex; }
+  .modal{ background:#fff; border-radius: var(--radius-lg); width: 420px; max-width:100%; border: 1px solid var(--border); box-shadow: 0 16px 40px rgba(20,20,18,0.22); max-height: 90vh; overflow-y:auto; animation: popIn .18s ease; }
+  .modal-head{ padding: 16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .modal-head h3{ font-size:16px; color: var(--blue-deep); }
+  .modal-close{ background:none; border:none; cursor:pointer; color: var(--text-muted); font-size:18px; line-height:1; }
+  .modal-body{ padding: 18px 20px; }
+  .modal-foot{ padding: 14px 20px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
+
+  .field{ margin-bottom: 14px; }
+  .field label{ display:block; font-size:12px; color: var(--text-muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:0.4px; }
+  .field input, .field select, .field textarea{ width:100%; padding: 8px 10px; border:1px solid var(--border-strong); border-radius: var(--radius-sm); font-size:13.5px; font-family: inherit; background:#fff; color: var(--text); }
+  .field textarea{ resize:vertical; min-height:56px; }
+  .field-row{ display:flex; gap:10px; }
+  .field-row .field{ flex:1; }
+
+  /* ---------- Charts ---------- */
+  .chart-wrap{ width:100%; overflow:hidden; }
+  .chart-wrap svg{ width:100%; height:auto; display:block; }
+  .chart-empty{ padding: 30px 10px; text-align:center; color: var(--text-faint); font-size:13px; }
+  .legend{ display:flex; gap:16px; margin-top:8px; font-size:11.5px; color: var(--text-muted); }
+  .legend .dot{ width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:5px; }
+
+  /* ---------- History ---------- */
+  .history-day{ margin-bottom: 18px; }
+  .history-date{ font-size:12.5px; font-weight:700; color: var(--blue-deep); margin-bottom:6px; letter-spacing:0.3px; }
+  .history-items{ display:flex; flex-wrap:wrap; gap:8px; }
+  .history-chip{ font-size:12px; padding: 5px 10px; border-radius: 20px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-muted); }
+  .history-chip strong{ color: var(--text); font-family: var(--font-mono); }
+
+  /* ---------- Today / week ---------- */
+  .stat-inline{ display:flex; gap: 18px; flex-wrap:wrap; }
+  .stat-inline .item{ min-width:90px; }
+  .stat-inline .item .n{ font-family: var(--font-mono); font-size:20px; font-weight:800; color: var(--blue-deep); }
+  .stat-inline .item .l{ font-size:11.5px; color: var(--text-muted); text-transform:uppercase; letter-spacing:0.4px; }
+
+  /* ---------- Settings ---------- */
+  .settings-row{ display:flex; align-items:center; justify-content:space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .settings-row:last-child{ border-bottom:none; }
+  .settings-row .lbl{ font-size:13.5px; }
+  .settings-row .lbl .sub{ font-size:11.5px; color: var(--text-muted); display:block; margin-top:2px; }
+
+  .toast{
+    position: fixed; bottom: 20px; right: 20px; background: var(--blue-deep); color:#fff;
+    padding: 12px 18px; border-radius: var(--radius-sm); font-size: 13px; box-shadow: 0 10px 28px rgba(0,0,0,0.24);
+    z-index: 200; opacity:0; transform: translateY(10px); transition: all .2s ease; pointer-events:none;
+    display:flex; align-items:center; gap:10px; max-width: 320px;
+  }
+  .toast.show{ opacity:1; transform: translateY(0); }
+  .toast.celebrate{ background: linear-gradient(135deg, var(--gold), #B45C05); }
+  .toast .toast-icon{ font-size:20px; }
+
+  /* ---------- Mobile ---------- */
+  .mobile-topbar{ display:none; }
+  @media (max-width: 860px){
+    .app{ flex-direction:column; }
+    .sidebar{ display:none; }
+    .mobile-topbar{ display:flex; align-items:center; justify-content:space-between; background: var(--surface); border-bottom:1px solid var(--border); padding: 12px 16px; position: sticky; top:0; z-index:50; }
+    .mobile-topbar .brand-title{ font-size:16px; }
+    .mobile-nav{ display:flex; overflow-x:auto; gap:4px; padding: 8px 12px; background: var(--surface); border-bottom:1px solid var(--border); position: sticky; top:53px; z-index:49; }
+    .mobile-nav .navlink{ white-space:nowrap; width:auto; }
+    .main{ padding: 20px 16px 60px 16px; }
+    .hero-panel{ flex-direction:column; align-items:flex-start; gap:16px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div id="appRoot">
+<div class="app">
+
+  <!-- Mobile topbar -->
+  <div class="mobile-topbar">
+    <div class="mark"><span class="bar"></span><span class="brand-title">TCF Canada</span></div>
+    <button class="btn btn-sm" id="mobileMenuBtn">Menu</button>
+  </div>
+  <div class="mobile-nav" id="mobileNav"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="mark"><span class="bar"></span><span class="brand-title">TCF Canada</span></div>
+      <div class="brand-sub">Preparation Dashboard</div>
+    </div>
+    <nav class="navlist" id="desktopNav"></nav>
+    <div class="sidebar-foot">
+      <div class="streak-pill"><span class="streak-flame" id="streakFlame">&#128293;</span><span class="streak-num" id="streakNum">0</span><span>day streak</span></div>
+      <div class="badge-pill"><span>&#127942;</span><span class="n" id="badgeCount">0</span><span>/ <span id="badgeTotal">0</span> badges</span></div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <section class="page" id="page-dashboard">
+      <div class="page-head">
+        <div class="eyebrow">Overview</div>
+        <h1 class="page-title">TCF Canada</h1>
+        <div class="page-desc">Preparation Dashboard — track your progress toward the 180-activity study plan.</div>
+      </div>
+
+      <div class="hero-panel">
+        <div class="ring-wrap" id="heroRing"></div>
+        <div class="hero-info">
+          <div class="rank-chip" id="rankChip">New Candidate</div>
+          <h2 id="heroHeadline">0 / 180 activities completed</h2>
+          <div class="hero-sub" id="heroSub">0% of your TCF Canada preparation plan</div>
+          <div class="hero-streak-row">
+            <div class="hero-stat"><span class="streak-flame" id="heroFlame">&#128293;</span><strong id="heroStreak">0</strong>&nbsp;day streak</div>
+            <div class="hero-stat">&#127942;&nbsp;<strong id="heroBadges">0</strong>&nbsp;/ <span id="heroBadgesTotal">0</span> badges earned</div>
+            <div class="hero-stat">&#128197;&nbsp;<strong id="heroWeek">0</strong>&nbsp;this week</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-4" id="dashSkillCards"></div>
+
+      <div class="section-block">
+        <div class="section-block-head"><h3>Writing — by part</h3></div>
+        <div class="grid grid-3" id="dashWritingCards"></div>
+      </div>
+
+      <div class="section-block">
+        <div class="badges-head"><h3>Achievements</h3><span class="count" id="achCount"></span></div>
+        <div class="badges-grid" id="achievementsGrid"></div>
+      </div>
+
+      <div class="grid grid-2" style="margin-top:26px;">
+        <div class="card">
+          <div class="card-title-row"><span class="card-label">Today</span></div>
+          <div class="stat-inline" id="todayStats"></div>
+          <div style="margin-top:12px; font-size:13px; color:var(--text-muted);"><strong id="todayTotal" style="color:var(--text); font-family:var(--font-mono);">0</strong> activities completed today</div>
+        </div>
+        <div class="card">
+          <div class="card-title-row"><span class="card-label">This week</span></div>
+          <div style="font-family: var(--font-mono); font-size: 30px; font-weight:800; color: var(--blue-deep);" id="weekTotal">0</div>
+          <div style="font-size:12.5px; color:var(--text-muted); margin-top:4px;">activities completed in the last 7 days</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LISTENING -->
+    <section class="page" id="page-listening"></section>
+
+    <!-- READING -->
+    <section class="page" id="page-reading"></section>
+
+    <!-- SPEAKING -->
+    <section class="page" id="page-speaking"></section>
+
+    <!-- WRITING -->
+    <section class="page" id="page-writing"></section>
+
+    <!-- HISTORY -->
+    <section class="page" id="page-history">
+      <div class="page-head">
+        <div class="eyebrow">Log</div>
+        <h1 class="page-title">Activity History</h1>
+        <div class="page-desc">Everything you have recorded, grouped by day.</div>
+      </div>
+      <div id="historyList"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="page" id="page-settings">
+      <div class="page-head">
+        <div class="eyebrow">Configuration</div>
+        <h1 class="page-title">Settings</h1>
+        <div class="page-desc">Target levels, backup, and data management.</div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-block-head"><h3>Target CEFR level per skill</h3></div>
+        <div class="card"><div id="targetLevelSettings"></div></div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-block-head"><h3>Backup &amp; restore</h3></div>
+        <div class="card">
+          <div class="settings-row">
+            <div class="lbl">Export data<span class="sub">Download everything as a JSON file.</span></div>
+            <button class="btn" id="exportBtn">Export data</button>
+          </div>
+          <div class="settings-row">
+            <div class="lbl">Import data<span class="sub">Restore your dashboard from a previously exported JSON file. This replaces all current data.</span></div>
+            <div>
+              <input type="file" id="importFile" accept="application/json" style="display:none;">
+              <button class="btn" id="importBtn">Import data</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-block-head"><h3>Danger zone</h3></div>
+        <div class="card">
+          <div class="settings-row">
+            <div class="lbl">Reset all data<span class="sub">Permanently erase all progress, results, badges, and history from your account.</span></div>
+            <button class="btn btn-danger" id="resetBtn">Reset dashboard</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+</div>
+
+<!-- Generic confirm modal -->
+<div class="overlay" id="confirmOverlay">
+  <div class="modal" style="width:380px;">
+    <div class="modal-head"><h3 id="confirmTitle">Confirm</h3><button class="modal-close" data-close="confirmOverlay">&times;</button></div>
+    <div class="modal-body"><p id="confirmMsg" style="margin:0; font-size:13.5px; color:var(--text-muted);"></p></div>
+    <div class="modal-foot">
+      <button class="btn" data-close="confirmOverlay">Cancel</button>
+      <button class="btn btn-danger" id="confirmYes">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Generic form modal (result / session / writing entry) -->
+<div class="overlay" id="formOverlay">
+  <div class="modal">
+    <div class="modal-head"><h3 id="formTitle">Add result</h3><button class="modal-close" data-close="formOverlay">&times;</button></div>
+    <form id="entryForm">
+      <div class="modal-body" id="formBody"></div>
+      <div class="modal-foot">
+        <button type="button" class="btn" data-close="formOverlay">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="formSaveBtn">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   CONSTANTS
+============================================================ */
+var LEVELS = ["A1","A2","B1","B2","C1","C2"];
+var LEVEL_VALUE = { A1:1, A2:2, B1:3, B2:4, C1:5, C2:6 };
+var LEVEL_COLORS = {
+  A1: { color:"#6B7280", tint:"#F1F1EF" },
+  A2: { color:"#475569", tint:"#EEF1F4" },
+  B1: { color:"#1D4ED8", tint:"#EAF1FB" },
+  B2: { color:"#0D9488", tint:"#E7F5F3" },
+  C1: { color:"#7C3AED", tint:"#F1EBFD" },
+  C2: { color:"#B45309", tint:"#FDF2E3" }
+};
+
+var TARGETS = {
+  listening: 40, reading: 40, speaking: 40,
+  writingPart1: 20, writingPart2: 20, writingPart3: 20
+};
+
+var SKILL_LABELS = {
+  listening: "Listening", reading: "Reading", speaking: "Speaking",
+  writingPart1: "Writing Part 1", writingPart2: "Writing Part 2", writingPart3: "Writing Part 3"
+};
+
+var SKILL_ACCENT = {
+  listening: { color:"#1D4ED8", tint:"#EAF1FB" },
+  reading:   { color:"#0D9488", tint:"#E7F5F3" },
+  speaking:  { color:"#D97706", tint:"#FDF2E3" },
+  writing:   { color:"#DB2777", tint:"#FCEAF2" }
+};
+
+var NAV_ITEMS = [
+  { id:"dashboard", label:"Dashboard", icon: iconGrid() },
+  { id:"listening", label:"Listening", icon: iconEar() },
+  { id:"reading", label:"Reading", icon: iconBook() },
+  { id:"speaking", label:"Speaking", icon: iconMic() },
+  { id:"writing", label:"Writing", icon: iconPen() },
+  { id:"history", label:"History", icon: iconClock() },
+  { id:"settings", label:"Settings", icon: iconGear() }
+];
+
+/* ============================================================
+   ACHIEVEMENTS
+============================================================ */
+var ACHIEVEMENTS = [
+  { id:"first_step", title:"First Step", desc:"Complete your first activity", icon:"&#128640;",
+    test: function(){ return totalCompleted() >= 1; } },
+  { id:"quarter", title:"Quarter Way", desc:"Reach 25% overall progress", icon:"&#11088;",
+    test: function(){ return pct(totalCompleted(),180) >= 25; } },
+  { id:"halfway", title:"Halfway Hero", desc:"Reach 50% overall progress", icon:"&#127941;",
+    test: function(){ return pct(totalCompleted(),180) >= 50; } },
+  { id:"three_quarter", title:"Almost There", desc:"Reach 75% overall progress", icon:"&#127919;",
+    test: function(){ return pct(totalCompleted(),180) >= 75; } },
+  { id:"complete_all", title:"180 Club", desc:"Complete all 180 activities", icon:"&#127942;",
+    test: function(){ return totalCompleted() >= 180; } },
+  { id:"listening_master", title:"Listening Master", desc:"Finish all 40 listening tasks", icon:"&#127911;",
+    test: function(){ return state.listening.completed >= 40; } },
+  { id:"reading_master", title:"Reading Master", desc:"Finish all 40 reading tasks", icon:"&#128214;",
+    test: function(){ return state.reading.completed >= 40; } },
+  { id:"speaking_master", title:"Speaking Master", desc:"Finish all 40 speaking sessions", icon:"&#127908;",
+    test: function(){ return state.speaking.completed >= 40; } },
+  { id:"writer", title:"Prolific Writer", desc:"Finish all 60 writing messages", icon:"&#9999;&#65039;",
+    test: function(){ return (state.writing.part1.completed+state.writing.part2.completed+state.writing.part3.completed) >= 60; } },
+  { id:"streak3", title:"Warming Up", desc:"Reach a 3-day study streak", icon:"&#128293;",
+    test: function(){ return currentStreak() >= 3; } },
+  { id:"streak7", title:"One Week Strong", desc:"Reach a 7-day study streak", icon:"&#128293;",
+    test: function(){ return currentStreak() >= 7; } },
+  { id:"streak30", title:"Unstoppable", desc:"Reach a 30-day study streak", icon:"&#128293;",
+    test: function(){ return currentStreak() >= 30; } },
+  { id:"level_b2", title:"B2 Achieved", desc:"Reach B2 in any skill", icon:"&#128200;",
+    test: function(){ return anySkillAtLeast("B2"); } },
+  { id:"level_c1", title:"C1 Achieved", desc:"Reach C1 in any skill", icon:"&#127775;",
+    test: function(){ return anySkillAtLeast("C1"); } }
+];
+function anySkillAtLeast(level){
+  var need = LEVEL_VALUE[level];
+  var keys = ["listening","reading","speaking","writing"];
+  return keys.some(function(k){
+    var cur = currentLevelFor(k);
+    return cur && LEVEL_VALUE[cur] >= need;
+  });
+}
+function computeUnlockedIds(){
+  return ACHIEVEMENTS.filter(function(a){ return a.test(); }).map(function(a){ return a.id; });
+}
+function checkAchievements(){
+  var unlocked = computeUnlockedIds();
+  var prev = state.unlockedAchievements || [];
+  var prevSet = {}; prev.forEach(function(id){ prevSet[id]=true; });
+  var newlyUnlocked = unlocked.filter(function(id){ return !prevSet[id]; });
+  if(newlyUnlocked.length){
+    state.unlockedAchievements = unlocked;
+    saveState();
+    newlyUnlocked.forEach(function(id){
+      var a = ACHIEVEMENTS.find(function(x){ return x.id===id; });
+      if(a) showToast(a.title + " unlocked — " + a.desc, true, a.icon);
+    });
+  } else if(unlocked.length !== prev.length) {
+    state.unlockedAchievements = unlocked;
+    saveState();
+  }
+}
+
+/* ============================================================
+   ICONS (tiny inline svg, line style)
+============================================================ */
+function iconGrid(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>'; }
+function iconEar(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 12a4 4 0 0 1 4-4 4 4 0 0 1 4 4c0 2-2 2-2 4a2 2 0 0 1-4 0"/><path d="M8 12c0-4 3-7 6-7 4 0 6 3 6 6 0 2-1 3-1 5a3 3 0 0 1-3 3"/></svg>'; }
+function iconBook(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5c2-1 5-1 7 0v14c-2-1-5-1-7 0V5z"/><path d="M20 5c-2-1-5-1-7 0v14c2-1 5-1 7 0V5z"/></svg>'; }
+function iconMic(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v4"/></svg>'; }
+function iconPen(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>'; }
+function iconClock(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'; }
+function iconGear(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>'; }
+function iconPlus(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg>'; }
+function iconMinus(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M5 12h14"/></svg>'; }
+
+/* ============================================================
+   RING GAUGE HELPER
+============================================================ */
+function ringGauge(percent, opts){
+  opts = opts || {};
+  var size = opts.size || 120, stroke = opts.stroke || 10;
+  var color = opts.color || "#16A34A", track = opts.track || "#E7E5DE";
+  var r = (size - stroke) / 2;
+  var c = 2 * Math.PI * r;
+  var target = c - (Math.max(0,Math.min(100,percent)) / 100) * c;
+  var id = "ring-" + Math.random().toString(36).slice(2,8);
+  var svg =
+    '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" class="ring-svg">' +
+      '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+track+'" stroke-width="'+stroke+'"/>' +
+      '<circle id="'+id+'" class="ring-progress" cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="'+stroke+'" stroke-linecap="round" stroke-dasharray="'+c.toFixed(2)+'" stroke-dashoffset="'+c.toFixed(2)+'" data-offset="'+target.toFixed(2)+'" transform="rotate(-90 '+(size/2)+' '+(size/2)+')"/>' +
+    '</svg>';
+  var center = '<div class="ring-center" style="width:'+size+'px;">' + (opts.center || "") + '</div>';
+  return '<div class="ring-wrap" style="width:'+size+'px; height:'+size+'px;">' + svg + center + '</div>';
+}
+function animateRings(){
+  requestAnimationFrame(function(){
+    document.querySelectorAll(".ring-progress").forEach(function(el){
+      var target = el.getAttribute("data-offset");
+      if(target !== null) el.style.strokeDashoffset = target;
+    });
+  });
+}
+
+/* ============================================================
+   STATE / STORAGE
+============================================================ */
+function defaultState(){
+  return {
+    listening: { completed:0, tests:[] },
+    reading:   { completed:0, tests:[] },
+    speaking:  { completed:0, sessions:[] },
+    writing: {
+      part1: { completed:0, entries:[] },
+      part2: { completed:0, entries:[] },
+      part3: { completed:0, entries:[] }
+    },
+    targetLevels: { listening:null, reading:null, speaking:null, writing:null },
+    activityLog: [],
+    unlockedAchievements: [],
+    meta: { createdAt: new Date().toISOString() }
+  };
+}
+
+var state = defaultState(); // real data is loaded from local storage on boot, see loadState()
+
+function mergeWithDefaults(parsed){
+  var d = defaultState();
+  if(!parsed || typeof parsed !== "object") return d;
+  d.listening.completed = clamp(numOr(parsed.listening && parsed.listening.completed, 0), 0, TARGETS.listening);
+  d.listening.tests = Array.isArray(parsed.listening && parsed.listening.tests) ? parsed.listening.tests : [];
+  d.reading.completed = clamp(numOr(parsed.reading && parsed.reading.completed, 0), 0, TARGETS.reading);
+  d.reading.tests = Array.isArray(parsed.reading && parsed.reading.tests) ? parsed.reading.tests : [];
+  d.speaking.completed = clamp(numOr(parsed.speaking && parsed.speaking.completed, 0), 0, TARGETS.speaking);
+  d.speaking.sessions = Array.isArray(parsed.speaking && parsed.speaking.sessions) ? parsed.speaking.sessions : [];
+  ["part1","part2","part3"].forEach(function(p){
+    var src = parsed.writing && parsed.writing[p];
+    d.writing[p].completed = clamp(numOr(src && src.completed, 0), 0, 20);
+    d.writing[p].entries = Array.isArray(src && src.entries) ? src.entries : [];
+  });
+  d.targetLevels = Object.assign({ listening:null, reading:null, speaking:null, writing:null }, parsed.targetLevels || {});
+  d.activityLog = Array.isArray(parsed.activityLog) ? parsed.activityLog : [];
+  d.unlockedAchievements = Array.isArray(parsed.unlockedAchievements) ? parsed.unlockedAchievements : [];
+  d.meta = parsed.meta || d.meta;
+  return d;
+}
+
+function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+function numOr(v, fallback){ var n = Number(v); return isFinite(n) ? n : fallback; }
+function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+var STORAGE_KEY = "tcfCanadaDashboardState";
+
+/* Load previously saved data from this browser's local storage, if any. */
+function loadState(){
+  try{
+    var raw = window.localStorage.getItem(STORAGE_KEY);
+    if(!raw) return defaultState();
+    return mergeWithDefaults(JSON.parse(raw));
+  }catch(e){
+    console.error("Failed to load saved data", e);
+    return defaultState();
+  }
+}
+
+/* Writes are debounced slightly so rapid clicks don't spam storage. */
+var saveTimer = null;
+function saveState(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(function(){
+    try{
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }catch(e){
+      console.error("Failed to save data", e);
+    }
+  }, 400);
+}
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function todayStr(){ return dateToStr(new Date()); }
+function dateToStr(d){
+  var y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,"0"), day = String(d.getDate()).padStart(2,"0");
+  return y + "-" + m + "-" + day;
+}
+function formatDateHuman(iso){
+  if(!iso) return "—";
+  var parts = iso.split("-");
+  if(parts.length!==3) return iso;
+  var d = new Date(Number(parts[0]), Number(parts[1])-1, Number(parts[2]));
+  var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return months[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+}
+
+function logActivity(skillKey, type, extra){
+  state.activityLog.push({ id: uid(), date: todayStr(), skill: skillKey, type: type, extra: extra || null, ts: Date.now() });
+}
+
+/* ============================================================
+   DERIVED / CALCULATIONS
+============================================================ */
+function totalCompleted(){
+  return state.listening.completed + state.reading.completed + state.speaking.completed +
+         state.writing.part1.completed + state.writing.part2.completed + state.writing.part3.completed;
+}
+function totalTarget(){ return 180; }
+function pct(done, target){ return target > 0 ? Math.round((done/target)*100) : 0; }
+function rankFor(p){
+  if(p>=100) return "TCF Master";
+  if(p>=75) return "Advanced Candidate";
+  if(p>=50) return "Building Momentum";
+  if(p>=25) return "Apprentice";
+  if(p>=1) return "Getting Started";
+  return "New Candidate";
+}
+
+function sortedRecords(records){
+  return records.slice().sort(function(a,b){
+    if(a.date === b.date) return (a.ts||0) - (b.ts||0);
+    return a.date < b.date ? -1 : 1;
+  });
+}
+
+function currentLevelFor(skillKey){
+  var records = recordsFor(skillKey);
+  if(records.length === 0) return null;
+  var sorted = sortedRecords(records);
+  return sorted[sorted.length-1].level || null;
+}
+function startingLevelFor(skillKey){
+  var records = recordsFor(skillKey);
+  if(records.length === 0) return null;
+  var sorted = sortedRecords(records);
+  return sorted[0].level || null;
+}
+function recordsFor(skillKey){
+  if(skillKey === "listening") return state.listening.tests;
+  if(skillKey === "reading") return state.reading.tests;
+  if(skillKey === "speaking") return state.speaking.sessions;
+  if(skillKey === "writing") return [].concat(state.writing.part1.entries, state.writing.part2.entries, state.writing.part3.entries);
+  if(skillKey === "writingPart1") return state.writing.part1.entries;
+  if(skillKey === "writingPart2") return state.writing.part2.entries;
+  if(skillKey === "writingPart3") return state.writing.part3.entries;
+  return [];
+}
+
+function nextTestNumber(records){ return records.length + 1; }
+
+function skillCompleted(skillKey){
+  if(skillKey === "listening") return state.listening.completed;
+  if(skillKey === "reading") return state.reading.completed;
+  if(skillKey === "speaking") return state.speaking.completed;
+  if(skillKey === "writingPart1") return state.writing.part1.completed;
+  if(skillKey === "writingPart2") return state.writing.part2.completed;
+  if(skillKey === "writingPart3") return state.writing.part3.completed;
+  return 0;
+}
+function skillTarget(skillKey){ return TARGETS[skillKey] || 0; }
+
+function adjustCompleted(skillKey, delta){
+  var target = skillTarget(skillKey);
+  var current;
+  if(skillKey === "listening") current = state.listening;
+  else if(skillKey === "reading") current = state.reading;
+  else if(skillKey === "speaking") current = state.speaking;
+  else if(skillKey === "writingPart1") current = state.writing.part1;
+  else if(skillKey === "writingPart2") current = state.writing.part2;
+  else if(skillKey === "writingPart3") current = state.writing.part3;
+  else return;
+
+  var next = clamp(current.completed + delta, 0, target);
+  if(next === current.completed) return;
+  current.completed = next;
+  if(delta > 0) logActivity(skillKey, "complete", { amount: 1 });
+  saveState();
+  renderAll();
+}
+
+/* Today / week / streak */
+function activityDates(){
+  var set = {};
+  state.activityLog.forEach(function(a){ set[a.date] = true; });
+  return set;
+}
+function last7DaysList(){
+  var days = [];
+  for(var i=6;i>=0;i--){ var d = new Date(); d.setDate(d.getDate()-i); days.push(dateToStr(d)); }
+  return days;
+}
+function weekTotal(){
+  var days = last7DaysList();
+  var set = {}; days.forEach(function(d){ set[d]=true; });
+  return state.activityLog.filter(function(a){ return set[a.date] && a.type==="complete"; }).length;
+}
+function todayCounts(){
+  var t = todayStr();
+  var counts = { listening:0, reading:0, speaking:0, writingPart1:0, writingPart2:0, writingPart3:0 };
+  state.activityLog.forEach(function(a){
+    if(a.date === t && a.type === "complete" && counts.hasOwnProperty(a.skill)) counts[a.skill]++;
+  });
+  return counts;
+}
+function currentStreak(){
+  var set = activityDates();
+  var d = new Date();
+  var todayKey = dateToStr(d);
+  if(!set[todayKey]) d.setDate(d.getDate()-1);
+  var streak = 0;
+  while(true){
+    var key = dateToStr(d);
+    if(set[key]){ streak++; d.setDate(d.getDate()-1); } else break;
+  }
+  return streak;
+}
+
+/* ============================================================
+   RENDER: NAV
+============================================================ */
+var currentPage = "dashboard";
+
+function buildNav(){
+  var desktop = document.getElementById("desktopNav");
+  var mobile = document.getElementById("mobileNav");
+  desktop.innerHTML = "";
+  mobile.innerHTML = "";
+  NAV_ITEMS.forEach(function(item){
+    var btn = document.createElement("button");
+    btn.className = "navlink" + (item.id===currentPage ? " active":"");
+    btn.innerHTML = item.icon + "<span>"+item.label+"</span>";
+    btn.addEventListener("click", function(){ goToPage(item.id); });
+    desktop.appendChild(btn);
+    var mbtn = btn.cloneNode(true);
+    mbtn.addEventListener("click", function(){ goToPage(item.id); });
+    mobile.appendChild(mbtn);
+  });
+  var streak = currentStreak();
+  document.getElementById("streakNum").textContent = streak;
+  document.getElementById("streakFlame").classList.toggle("active", streak > 0);
+  var unlockedCount = (state.unlockedAchievements||[]).length;
+  document.getElementById("badgeCount").textContent = unlockedCount;
+  document.getElementById("badgeTotal").textContent = ACHIEVEMENTS.length;
+}
+
+function goToPage(id){
+  currentPage = id;
+  document.querySelectorAll(".page").forEach(function(p){ p.classList.remove("active"); });
+  var el = document.getElementById("page-"+id);
+  if(el) el.classList.add("active");
+  buildNav();
+  window.scrollTo(0,0);
+  renderPage(id);
+}
+
+/* ============================================================
+   RENDER: DASHBOARD
+============================================================ */
+function renderDashboard(){
+  var done = totalCompleted(), target = totalTarget();
+  var p = pct(done,target);
+
+  var ringCenter =
+    '<div class="hero-ring-num">'+done+'</div>' +
+    '<div class="hero-ring-of">/ '+target+'</div>' +
+    '<div class="hero-ring-pct">'+p+'%</div>';
+  document.getElementById("heroRing").outerHTML = ringGauge(p, { size:132, stroke:12, color:"#16A34A", track:"#E7E5DE", center: ringCenter })
+    .replace('class="ring-wrap"', 'class="ring-wrap" id="heroRing"');
+
+  document.getElementById("rankChip").textContent = "\u2728 " + rankFor(p);
+  document.getElementById("heroHeadline").textContent = done + " / 180 activities completed";
+  document.getElementById("heroSub").textContent = p + "% of your TCF Canada preparation plan";
+  document.getElementById("heroStreak").textContent = currentStreak();
+  document.getElementById("heroFlame").classList.toggle("active", currentStreak() > 0);
+  document.getElementById("heroBadges").textContent = (state.unlockedAchievements||[]).length;
+  document.getElementById("heroBadgesTotal").textContent = ACHIEVEMENTS.length;
+  document.getElementById("heroWeek").textContent = weekTotal();
+
+  var writingDone = state.writing.part1.completed + state.writing.part2.completed + state.writing.part3.completed;
+  var writingTarget = TARGETS.writingPart1+TARGETS.writingPart2+TARGETS.writingPart3;
+  var writingLevel = currentLevelFor("writing");
+
+  var skills = [
+    { key:"listening", label:"Listening", done: state.listening.completed, target: TARGETS.listening, level: currentLevelFor("listening"), accent: SKILL_ACCENT.listening },
+    { key:"reading", label:"Reading", done: state.reading.completed, target: TARGETS.reading, level: currentLevelFor("reading"), accent: SKILL_ACCENT.reading },
+    { key:"speaking", label:"Speaking", done: state.speaking.completed, target: TARGETS.speaking, level: currentLevelFor("speaking"), accent: SKILL_ACCENT.speaking },
+    { key:"writing", label:"Writing", done: writingDone, target: writingTarget, level: writingLevel, accent: SKILL_ACCENT.writing }
+  ];
+
+  var wrap = document.getElementById("dashSkillCards");
+  wrap.innerHTML = "";
+  skills.forEach(function(s){
+    var sp = pct(s.done, s.target);
+    var card = document.createElement("div");
+    card.className = "card clickable accent-top";
+    card.style.setProperty("--accent", s.accent.color);
+    var ring = ringGauge(sp, { size:76, stroke:8, color: s.accent.color, track: s.accent.tint, center: '<div style="font-family:var(--font-mono); font-weight:800; font-size:15px;">'+sp+'%</div>' });
+    card.innerHTML =
+      '<div class="card-title-row"><span class="card-label">'+s.label+'</span>'+levelChipHtml(s.level)+'</div>'+
+      '<div style="display:flex; align-items:center; gap:14px;">'+
+        '<div>'+ring+'</div>'+
+        '<div><div class="ticket-num">'+s.done+' <small>/ '+s.target+'</small></div><div class="meta-row" style="margin-top:8px;"><span>tasks completed</span></div></div>'+
+      '</div>';
+    card.addEventListener("click", function(){ goToPage(s.key); });
+    wrap.appendChild(card);
+  });
+
+  var wwrap = document.getElementById("dashWritingCards");
+  wwrap.innerHTML = "";
+  [["part1","Part 1"],["part2","Part 2"],["part3","Part 3"]].forEach(function(pair){
+    var pkey = pair[0], plabel = pair[1];
+    var d = state.writing[pkey].completed, t = TARGETS["writing"+capitalize(pkey)];
+    var pp = pct(d,t);
+    var card = document.createElement("div");
+    card.className = "card accent-top";
+    card.style.setProperty("--accent", SKILL_ACCENT.writing.color);
+    card.innerHTML =
+      '<div class="card-title-row"><span class="card-label">Writing '+plabel+'</span></div>'+
+      '<div class="ticket-num">'+d+' <small>/ '+t+'</small></div>'+
+      '<div class="progress-track"><div class="progress-fill" style="width:'+pp+'%; background:'+SKILL_ACCENT.writing.color+';"></div></div>'+
+      '<div class="meta-row"><span>Messages</span><span class="pct">'+pp+'%</span></div>';
+    wwrap.appendChild(card);
+  });
+
+  renderAchievements();
+
+  var tc = todayCounts();
+  var todayWrap = document.getElementById("todayStats");
+  todayWrap.innerHTML = "";
+  var todayItems = [
+    ["Listening", tc.listening], ["Reading", tc.reading], ["Speaking", tc.speaking],
+    ["Writing", tc.writingPart1+tc.writingPart2+tc.writingPart3]
+  ];
+  todayItems.forEach(function(it){
+    var div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = '<div class="n">'+it[1]+'</div><div class="l">'+it[0]+'</div>';
+    todayWrap.appendChild(div);
+  });
+  var todaySum = tc.listening+tc.reading+tc.speaking+tc.writingPart1+tc.writingPart2+tc.writingPart3;
+  document.getElementById("todayTotal").textContent = todaySum;
+  document.getElementById("weekTotal").textContent = weekTotal();
+
+  animateRings();
+}
+
+function renderAchievements(){
+  var wrap = document.getElementById("achievementsGrid");
+  var unlockedIds = {};
+  (state.unlockedAchievements||[]).forEach(function(id){ unlockedIds[id]=true; });
+  document.getElementById("achCount").textContent = (state.unlockedAchievements||[]).length + " / " + ACHIEVEMENTS.length + " earned";
+  wrap.innerHTML = ACHIEVEMENTS.map(function(a){
+    var unlocked = !!unlockedIds[a.id];
+    return '<div class="badge-tile '+(unlocked?"unlocked":"locked")+'">'+
+      '<div class="badge-icon">'+a.icon+'</div>'+
+      '<div class="badge-title">'+a.title+'</div>'+
+      '<div class="badge-desc">'+a.desc+'</div>'+
+    '</div>';
+  }).join("");
+}
+
+function levelChipHtml(level){
+  if(!level) return '<span class="level-chip na">Not recorded</span>';
+  var c = LEVEL_COLORS[level] || { color:"#1E3A5F", tint:"#EAF1FB" };
+  return '<span class="level-chip" style="background:'+c.tint+'; color:'+c.color+'; border:1px solid '+c.color+'33;">'+level+'</span>';
+}
+
+/* ============================================================
+   RENDER: SKILL PAGES (Listening / Reading / Speaking)
+============================================================ */
+function renderSimpleSkillPage(cfg){
+  var page = document.getElementById(cfg.pageId);
+  var completed = skillCompleted(cfg.skillKey);
+  var target = skillTarget(cfg.skillKey);
+  var p = pct(completed, target);
+  var records = sortedRecords(cfg.records());
+  var current = currentLevelFor(cfg.levelSkillKey || cfg.skillKey);
+  var starting = startingLevelFor(cfg.levelSkillKey || cfg.skillKey);
+  var targetLevel = state.targetLevels[cfg.targetLevelKey || cfg.skillKey];
+  var accent = cfg.accent || SKILL_ACCENT.listening;
+
+  var ring = ringGauge(p, { size:132, stroke:12, color: accent.color, track: accent.tint,
+    center: '<div class="hero-ring-num" style="font-size:26px;">'+completed+'</div><div class="hero-ring-of">/ '+target+'</div><div class="hero-ring-pct" style="color:'+accent.color+';">'+p+'%</div>' });
+
+  var html = '';
+  html += '<div class="page-head"><div class="eyebrow">Skill</div><h1 class="page-title">'+cfg.title+'</h1><div class="page-desc">'+cfg.desc+'</div></div>';
+
+  html += '<div class="grid grid-2">';
+  html += '<div class="card accent-top" style="--accent:'+accent.color+';">';
+  html += '<div class="card-title-row"><span class="card-label">Progress</span></div>';
+  html += '<div style="display:flex; justify-content:center; padding:6px 0;">'+ring+'</div>';
+  html += '<div class="complete-row">';
+  html += '<button class="btn btn-icon" id="'+cfg.skillKey+'-minus" '+(completed<=0?"disabled":"")+'>'+iconMinus()+'</button>';
+  html += '<button class="btn btn-primary" id="'+cfg.skillKey+'-plus" '+(completed>=target?"disabled":"")+'>'+iconPlus()+' Complete</button>';
+  html += '</div>';
+  html += '</div>';
+
+  html += '<div class="card">';
+  html += '<div class="card-title-row"><span class="card-label">CEFR level</span></div>';
+  html += '<div class="level-path">'+levelPathHtml(starting, current, targetLevel)+'</div>';
+  html += '</div>';
+  html += '</div>';
+
+  html += '<div class="section-block"><div class="section-block-head"><h3>Performance</h3></div>';
+  html += '<div class="card"><div class="chart-wrap" id="'+cfg.skillKey+'-chart"></div></div>';
+  html += '</div>';
+
+  html += '<div class="section-block"><div class="section-block-head"><h3>Test history</h3><button class="btn btn-primary btn-sm" id="'+cfg.skillKey+'-addbtn">'+iconPlus()+' '+cfg.addLabel+'</button></div>';
+  html += '<div class="card" style="padding:0; overflow-x:auto;">';
+  html += buildRecordsTable(records, cfg.recordType);
+  html += '</div></div>';
+
+  page.innerHTML = html;
+
+  document.getElementById(cfg.skillKey+"-plus").addEventListener("click", function(){ adjustCompleted(cfg.skillKey, 1); });
+  document.getElementById(cfg.skillKey+"-minus").addEventListener("click", function(){ adjustCompleted(cfg.skillKey, -1); });
+  document.getElementById(cfg.skillKey+"-addbtn").addEventListener("click", function(){ openRecordForm(cfg); });
+
+  renderChartInto(cfg.skillKey+"-chart", records, cfg.recordType, accent.color);
+  wireRecordsTableEvents(page, cfg);
+  animateRings();
+}
+
+function levelPathHtml(starting, current, target){
+  var parts = [];
+  parts.push(chipOrDash(starting, "Starting"));
+  parts.push('<span class="arrow">&#8594;</span>');
+  parts.push(chipOrDash(current, "Current"));
+  parts.push('<span class="arrow">&#8594;</span>');
+  parts.push(chipOrDash(target, "Target"));
+  return parts.join("");
+}
+function chipOrDash(level, label){
+  var chip = level ? levelChipHtml(level) : '<span class="level-chip na">'+(label==="Target"?"Not set":"Not recorded")+'</span>';
+  return '<span style="display:flex;flex-direction:column;align-items:center;gap:5px;">'+chip+'<span class="tag">'+label+'</span></span>';
+}
+
+function buildRecordsTable(records, recordType){
+  if(records.length === 0){
+    return '<table class="datatable"><tbody><tr class="empty-row"><td>No results recorded yet. Click "Add result" to log your first one.</td></tr></tbody></table>';
+  }
+  var head = '<tr><th>#</th><th>Date</th><th>Score</th><th>Level</th><th>Notes</th><th></th></tr>';
+  var rows = records.slice().reverse().map(function(r, idxRev){
+    var num = r.num != null ? r.num : (records.length - idxRev);
+    var scoreStr = "—";
+    if(r.score !== null && r.score !== undefined && r.score !== ""){
+      scoreStr = r.maxScore ? (r.score + " / " + r.maxScore) : String(r.score);
+    }
+    return '<tr data-id="'+r.id+'">'+
+      '<td class="num">#'+num+'</td>'+
+      '<td>'+formatDateHuman(r.date)+'</td>'+
+      '<td class="num">'+scoreStr+'</td>'+
+      '<td>'+(r.level ? levelChipHtml(r.level) : '<span class="level-chip na">—</span>')+'</td>'+
+      '<td style="color:var(--text-muted); max-width:220px;">'+(r.notes ? escapeHtml(r.notes) : '—')+'</td>'+
+      '<td><div class="row-actions">'+
+        '<button class="btn btn-sm edit-record" data-id="'+r.id+'">Edit</button>'+
+        '<button class="btn btn-sm btn-danger delete-record" data-id="'+r.id+'">Delete</button>'+
+      '</div></td>'+
+    '</tr>';
+  }).join("");
+  return '<table class="datatable"><thead>'+head+'</thead><tbody>'+rows+'</tbody></table>';
+}
+
+function escapeHtml(s){
+  var div = document.createElement("div");
+  div.textContent = s;
+  return div.innerHTML;
+}
+
+function wireRecordsTableEvents(page, cfg){
+  page.querySelectorAll(".edit-record").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var id = btn.getAttribute("data-id");
+      var rec = cfg.records().find(function(r){ return r.id === id; });
+      if(rec) openRecordForm(cfg, rec);
+    });
+  });
+  page.querySelectorAll(".delete-record").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var id = btn.getAttribute("data-id");
+      askConfirm("Delete record", "This will permanently delete this record. This cannot be undone.", function(){
+        var arr = cfg.records();
+        var idx = arr.findIndex(function(r){ return r.id === id; });
+        if(idx > -1) arr.splice(idx,1);
+        saveState();
+        renderAll();
+        showToast("Record deleted.");
+      });
+    });
+  });
+}
+
+/* ============================================================
+   RECORD FORM (add / edit)
+============================================================ */
+var activeFormCfg = null;
+var activeEditId = null;
+
+function openRecordForm(cfg, existing){
+  activeFormCfg = cfg;
+  activeEditId = existing ? existing.id : null;
+  document.getElementById("formTitle").textContent = existing ? "Edit result" : cfg.addLabel;
+  document.getElementById("formSaveBtn").textContent = existing ? "Save changes" : "Save";
+
+  var records = cfg.records();
+  var nextNum = existing ? existing.num : nextTestNumber(records);
+  var body = document.getElementById("formBody");
+
+  var numFieldLabel = cfg.numLabel || "Number";
+  var showMaxScore = cfg.recordType === "test";
+
+  var html = "";
+  html += '<div class="field"><label>'+numFieldLabel+'</label><input type="text" value="'+nextNum+'" disabled></div>';
+  html += '<div class="field"><label>Date</label><input type="date" id="f-date" value="'+(existing ? existing.date : todayStr())+'" required></div>';
+
+  if(showMaxScore){
+    html += '<div class="field-row"><div class="field"><label>Score</label><input type="number" id="f-score" min="0" step="1" value="'+(existing && existing.score!=null ? existing.score : "")+'" required></div>';
+    html += '<div class="field"><label>Maximum score</label><input type="number" id="f-maxscore" min="1" step="1" value="'+(existing && existing.maxScore!=null ? existing.maxScore : (cfg.defaultMax || 40))+'" required></div></div>';
+  } else {
+    html += '<div class="field"><label>Score <span style="text-transform:none;">(optional)</span></label><input type="number" id="f-score" min="0" step="1" value="'+(existing && existing.score!=null ? existing.score : "")+'"></div>';
+  }
+
+  html += '<div class="field"><label>CEFR level</label><select id="f-level" required>';
+  html += '<option value="">Select level</option>';
+  LEVELS.forEach(function(lv){
+    html += '<option value="'+lv+'" '+(existing && existing.level===lv ? "selected":"")+'>'+lv+'</option>';
+  });
+  html += '</select></div>';
+
+  html += '<div class="field"><label>Notes <span style="text-transform:none;">(optional)</span></label><textarea id="f-notes" placeholder="e.g. Difficult vocabulary, better concentration...">'+(existing && existing.notes ? escapeHtml(existing.notes) : "")+'</textarea></div>';
+
+  body.innerHTML = html;
+  document.getElementById("formOverlay").classList.add("active");
+}
+
+document.getElementById("entryForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  if(!activeFormCfg) return;
+  var cfg = activeFormCfg;
+  var records = cfg.records();
+
+  var date = document.getElementById("f-date").value || todayStr();
+  var level = document.getElementById("f-level").value;
+  var notes = document.getElementById("f-notes").value.trim();
+  var scoreEl = document.getElementById("f-score");
+  var maxEl = document.getElementById("f-maxscore");
+
+  if(!level){ showToast("Please select a CEFR level."); return; }
+
+  var score = scoreEl && scoreEl.value !== "" ? Number(scoreEl.value) : null;
+  var maxScore = maxEl && maxEl.value !== "" ? Number(maxEl.value) : null;
+
+  if(activeEditId){
+    var rec = records.find(function(r){ return r.id === activeEditId; });
+    if(rec){ rec.date = date; rec.level = level; rec.notes = notes; rec.score = score; rec.maxScore = maxScore; }
+    showToast("Record updated.");
+  } else {
+    var newRec = { id: uid(), num: nextTestNumber(records), date: date, score: score, maxScore: maxScore, level: level, notes: notes, ts: Date.now() };
+    records.push(newRec);
+    logActivity(cfg.skillKey, "result", { level: level });
+    showToast("Result added.");
+  }
+
+  saveState();
+  closeOverlay("formOverlay");
+  renderAll();
+});
+
+/* ============================================================
+   CHARTS (inline SVG, no dependencies)
+============================================================ */
+function renderChartInto(elId, records, recordType, lineColor){
+  var el = document.getElementById(elId);
+  if(!el) return;
+  if(records.length === 0){
+    el.innerHTML = '<div class="chart-empty">No data yet — results will appear here as a chart once you add them.</div>';
+    return;
+  }
+
+  var W = 640, H = 220, padL = 38, padR = 16, padT = 16, padB = 30;
+  var innerW = W - padL - padR, innerH = H - padT - padB;
+  var color = lineColor || "#1E3A5F";
+
+  var hasScores = records.some(function(r){ return r.score !== null && r.score !== undefined && r.maxScore; });
+  var n = records.length;
+  var xStep = n > 1 ? innerW/(n-1) : 0;
+  function xFor(i){ return padL + (n>1 ? i*xStep : innerW/2); }
+
+  var svg = '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet">';
+  for(var g=0; g<=4; g++){
+    var gy = padT + (innerH/4)*g;
+    svg += '<line x1="'+padL+'" y1="'+gy+'" x2="'+(W-padR)+'" y2="'+gy+'" stroke="#EEECE3" stroke-width="1"/>';
+  }
+
+  if(hasScores){
+    var pts = records.map(function(r,i){
+      var pctScore = (r.score!=null && r.maxScore) ? (r.score/r.maxScore)*100 : null;
+      return { x: xFor(i), pctScore: pctScore };
+    });
+    var yFor = function(p){ return padT + innerH - (p/100)*innerH; };
+    var pathParts = [];
+    pts.forEach(function(pt){
+      if(pt.pctScore==null) return;
+      var y = yFor(pt.pctScore);
+      pathParts.push((pathParts.length===0 ? "M":"L") + pt.x.toFixed(1) + "," + y.toFixed(1));
+    });
+    if(pathParts.length){
+      svg += '<path d="'+pathParts.join(" ")+'" fill="none" stroke="'+color+'" stroke-width="2.5"/>';
+      pts.forEach(function(pt){
+        if(pt.pctScore==null) return;
+        var y = yFor(pt.pctScore);
+        svg += '<circle cx="'+pt.x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3.6" fill="'+color+'"/>';
+      });
+    }
+    [0,50,100].forEach(function(v){
+      var y = yFor(v);
+      svg += '<text x="'+(padL-8)+'" y="'+(y+3)+'" font-size="9" fill="#A6A29A" text-anchor="end" font-family="monospace">'+v+'%</text>';
+    });
+  }
+
+  var levelPts = records.map(function(r,i){ return { x: xFor(i), level: r.level ? LEVEL_VALUE[r.level] : null }; });
+  var yForLevel = function(v){ return padT + innerH - ((v-1)/5)*innerH; };
+  var lPath = [];
+  levelPts.forEach(function(pt){
+    if(pt.level==null) return;
+    var y = yForLevel(pt.level);
+    lPath.push((lPath.length===0?"M":"L") + pt.x.toFixed(1) + "," + y.toFixed(1));
+  });
+  if(lPath.length){
+    svg += '<path d="'+lPath.join(" ")+'" fill="none" stroke="#D97706" stroke-width="1.8" stroke-dasharray="4,3"/>';
+    levelPts.forEach(function(pt){
+      if(pt.level==null) return;
+      var y = yForLevel(pt.level);
+      svg += '<rect x="'+(pt.x-2.5).toFixed(1)+'" y="'+(y-2.5).toFixed(1)+'" width="5" height="5" fill="#D97706"/>';
+    });
+  }
+
+  records.forEach(function(r,i){
+    var label = r.num != null ? "#"+r.num : (i+1);
+    if(n > 14 && i % Math.ceil(n/14) !== 0) return;
+    svg += '<text x="'+xFor(i).toFixed(1)+'" y="'+(H-8)+'" font-size="9" fill="#A6A29A" text-anchor="middle" font-family="monospace">'+label+'</text>';
+  });
+
+  svg += '</svg>';
+  el.innerHTML = svg;
+
+  var legendHtml = '<div class="legend">';
+  if(hasScores) legendHtml += '<span><span class="dot" style="background:'+color+';"></span>Score (%)</span>';
+  legendHtml += '<span><span class="dot" style="background:#D97706;"></span>CEFR level (A1&ndash;C2)</span>';
+  legendHtml += '</div>';
+  el.innerHTML += legendHtml;
+}
+
+/* ============================================================
+   RENDER: WRITING
+============================================================ */
+function renderWritingPage(){
+  var page = document.getElementById("page-writing");
+  var accent = SKILL_ACCENT.writing;
+  var parts = [
+    { key:"writingPart1", stateKey:"part1", label:"Part 1" },
+    { key:"writingPart2", stateKey:"part2", label:"Part 2" },
+    { key:"writingPart3", stateKey:"part3", label:"Part 3" }
+  ];
+
+  var html = '<div class="page-head"><div class="eyebrow">Skill</div><h1 class="page-title">Writing</h1><div class="page-desc">Track message completion and CEFR progression separately for each of the three writing parts.</div></div>';
+
+  parts.forEach(function(part){
+    var completed = state.writing[part.stateKey].completed;
+    var target = TARGETS[part.key];
+    var p = pct(completed, target);
+    var records = sortedRecords(state.writing[part.stateKey].entries);
+    var current = currentLevelFor(part.key);
+    var starting = startingLevelFor(part.key);
+    var ring = ringGauge(p, { size:96, stroke:9, color: accent.color, track: accent.tint, center: '<div style="font-family:var(--font-mono); font-weight:800; font-size:16px;">'+p+'%</div>' });
+
+    html += '<div class="section-block">';
+    html += '<div class="section-block-head"><h3>Writing '+part.label+'</h3></div>';
+    html += '<div class="grid grid-2">';
+    html += '<div class="card accent-top" style="--accent:'+accent.color+';">';
+    html += '<div class="card-title-row"><span class="card-label">Progress</span></div>';
+    html += '<div style="display:flex; align-items:center; gap:14px;">'+ring+
+      '<div><div class="ticket-num">'+completed+' <small>/ '+target+'</small></div><div class="meta-row" style="margin-top:8px;"><span>messages completed</span></div></div></div>';
+    html += '<div class="complete-row">';
+    html += '<button class="btn btn-icon" id="'+part.key+'-minus" '+(completed<=0?"disabled":"")+'>'+iconMinus()+'</button>';
+    html += '<button class="btn btn-primary" id="'+part.key+'-plus" '+(completed>=target?"disabled":"")+'>'+iconPlus()+' Complete</button>';
+    html += '</div></div>';
+
+    html += '<div class="card"><div class="card-title-row"><span class="card-label">CEFR level</span></div>';
+    html += '<div class="level-path">'+levelPathHtml(starting, current, state.targetLevels.writing)+'</div></div>';
+    html += '</div>';
+
+    html += '<div class="card" style="margin-top:14px;"><div class="chart-wrap" id="'+part.key+'-chart"></div></div>';
+
+    html += '<div class="section-block-head" style="margin-top:14px;"><h3 style="font-size:14px;">Entries</h3><button class="btn btn-primary btn-sm" id="'+part.key+'-addbtn">'+iconPlus()+' Add entry</button></div>';
+    html += '<div class="card" style="padding:0; overflow-x:auto;">'+buildRecordsTable(records, "writing")+'</div>';
+    html += '</div>';
+  });
+
+  page.innerHTML = html;
+
+  parts.forEach(function(part){
+    document.getElementById(part.key+"-plus").addEventListener("click", function(){ adjustCompleted(part.key, 1); });
+    document.getElementById(part.key+"-minus").addEventListener("click", function(){ adjustCompleted(part.key, -1); });
+
+    var cfg = {
+      skillKey: part.key, levelSkillKey: part.key, targetLevelKey: "writing",
+      records: function(){ return state.writing[part.stateKey].entries; },
+      addLabel: "Add entry", recordType: "writing", numLabel: "Message #"
+    };
+    document.getElementById(part.key+"-addbtn").addEventListener("click", function(){ openRecordForm(cfg); });
+    renderChartInto(part.key+"-chart", sortedRecords(state.writing[part.stateKey].entries), "writing", accent.color);
+    wireRecordsTableEvents(page, cfg);
+  });
+
+  animateRings();
+}
+
+/* ============================================================
+   RENDER: HISTORY
+============================================================ */
+function renderHistory(){
+  var wrap = document.getElementById("historyList");
+  if(state.activityLog.length === 0){
+    wrap.innerHTML = '<div class="card chart-empty" style="padding:40px;">No activity recorded yet. Complete a task or add a result to see it here.</div>';
+    return;
+  }
+  var byDate = {};
+  state.activityLog.forEach(function(a){
+    if(!byDate[a.date]) byDate[a.date] = [];
+    byDate[a.date].push(a);
+  });
+  var dates = Object.keys(byDate).sort().reverse();
+
+  var html = "";
+  dates.forEach(function(date){
+    var items = byDate[date];
+    var agg = {};
+    items.forEach(function(a){
+      var key = a.skill + "::" + a.type;
+      if(!agg[key]) agg[key] = { skill:a.skill, type:a.type, count:0, levels:[] };
+      agg[key].count++;
+      if(a.extra && a.extra.level) agg[key].levels.push(a.extra.level);
+    });
+    html += '<div class="history-day"><div class="history-date">'+formatDateHuman(date)+'</div><div class="history-items">';
+    Object.keys(agg).forEach(function(k){
+      var a = agg[k];
+      var label = SKILL_LABELS[a.skill] || a.skill;
+      if(a.type === "complete"){
+        html += '<span class="history-chip">'+label+' <strong>+'+a.count+'</strong></span>';
+      } else {
+        var lv = a.levels.length ? " (" + a.levels[a.levels.length-1] + ")" : "";
+        html += '<span class="history-chip">'+label+' result recorded'+(a.count>1?' <strong>&times;'+a.count+'</strong>':'')+lv+'</span>';
+      }
+    });
+    html += '</div></div>';
+  });
+  wrap.innerHTML = html;
+}
+
+/* ============================================================
+   RENDER: SETTINGS
+============================================================ */
+function renderSettings(){
+  var wrap = document.getElementById("targetLevelSettings");
+  var rows = [ ["listening","Listening"], ["reading","Reading"], ["speaking","Speaking"], ["writing","Writing"] ];
+  wrap.innerHTML = rows.map(function(r){
+    var key = r[0], label = r[1];
+    var current = state.targetLevels[key] || "";
+    var options = '<option value="">Not set</option>' + LEVELS.map(function(lv){
+      return '<option value="'+lv+'" '+(current===lv?"selected":"")+'>'+lv+'</option>';
+    }).join("");
+    return '<div class="settings-row"><div class="lbl">'+label+' target level</div><select class="target-level-select" data-skill="'+key+'" style="width:140px; padding:6px 8px; border:1px solid var(--border-strong); border-radius:4px;">'+options+'</select></div>';
+  }).join("");
+
+  wrap.querySelectorAll(".target-level-select").forEach(function(sel){
+    sel.addEventListener("change", function(){
+      var skill = sel.getAttribute("data-skill");
+      state.targetLevels[skill] = sel.value || null;
+      saveState();
+      renderAll();
+      showToast("Target level updated.");
+    });
+  });
+}
+
+/* ============================================================
+   MODALS / TOAST
+============================================================ */
+function closeOverlay(id){ document.getElementById(id).classList.remove("active"); }
+document.querySelectorAll("[data-close]").forEach(function(btn){
+  btn.addEventListener("click", function(){ closeOverlay(btn.getAttribute("data-close")); });
+});
+document.querySelectorAll(".overlay").forEach(function(ov){
+  ov.addEventListener("click", function(e){ if(e.target === ov) closeOverlay(ov.id); });
+});
+
+var confirmCallback = null;
+function askConfirm(title, msg, cb){
+  document.getElementById("confirmTitle").textContent = title;
+  document.getElementById("confirmMsg").textContent = msg;
+  confirmCallback = cb;
+  document.getElementById("confirmOverlay").classList.add("active");
+}
+document.getElementById("confirmYes").addEventListener("click", function(){
+  var cb = confirmCallback;
+  closeOverlay("confirmOverlay");
+  if(cb) cb();
+});
+
+var toastTimer = null;
+var toastQueue = [];
+var toastShowing = false;
+function showToast(msg, celebrate, icon){
+  toastQueue.push({ msg:msg, celebrate: !!celebrate, icon: icon || "" });
+  if(!toastShowing) advanceToastQueue();
+}
+function advanceToastQueue(){
+  if(toastQueue.length === 0){ toastShowing = false; return; }
+  toastShowing = true;
+  var next = toastQueue.shift();
+  var t = document.getElementById("toast");
+  t.classList.toggle("celebrate", next.celebrate);
+  t.innerHTML = (next.celebrate ? '<span class="toast-icon">'+next.icon+'</span>' : '') + '<span>'+next.msg+'</span>';
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){
+    t.classList.remove("show");
+    setTimeout(advanceToastQueue, 220);
+  }, next.celebrate ? 3400 : 2400);
+}
+
+/* ============================================================
+   EXPORT / IMPORT / RESET
+============================================================ */
+document.getElementById("exportBtn").addEventListener("click", function(){
+  var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "tcf-canada-dashboard-" + todayStr() + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("Data exported.");
+});
+
+document.getElementById("importBtn").addEventListener("click", function(){
+  document.getElementById("importFile").click();
+});
+document.getElementById("importFile").addEventListener("change", function(e){
+  var file = e.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    try{
+      var parsed = JSON.parse(ev.target.result);
+      askConfirm("Import data", "This will replace all current dashboard data with the contents of this file. This cannot be undone.", function(){
+        state = mergeWithDefaults(parsed);
+        saveState();
+        renderAll();
+        showToast("Data imported successfully.");
+      });
+    }catch(err){
+      showToast("This file could not be read as valid dashboard data.");
+    }
+    e.target.value = "";
+  };
+  reader.readAsText(file);
+});
+
+document.getElementById("resetBtn").addEventListener("click", function(){
+  askConfirm("Reset dashboard", "This will permanently erase all progress, test results, badges, and history. This cannot be undone.", function(){
+    state = defaultState();
+    saveState();
+    renderAll();
+    showToast("Dashboard has been reset.");
+  });
+});
+
+/* ============================================================
+   PAGE ROUTER / INIT
+============================================================ */
+function renderPage(id){
+  if(id === "dashboard") renderDashboard();
+  else if(id === "listening") renderSimpleSkillPage({
+    pageId: "page-listening", skillKey: "listening",
+    title: "Listening", desc: "40 target tasks. Track completion and test performance over time.",
+    records: function(){ return state.listening.tests; },
+    addLabel: "Add result", recordType: "test", defaultMax: 40, numLabel: "Test #",
+    accent: SKILL_ACCENT.listening
+  });
+  else if(id === "reading") renderSimpleSkillPage({
+    pageId: "page-reading", skillKey: "reading",
+    title: "Reading", desc: "40 target tasks. Track completion and test performance over time.",
+    records: function(){ return state.reading.tests; },
+    addLabel: "Add result", recordType: "test", defaultMax: 40, numLabel: "Test #",
+    accent: SKILL_ACCENT.reading
+  });
+  else if(id === "speaking") renderSimpleSkillPage({
+    pageId: "page-speaking", skillKey: "speaking",
+    title: "Speaking", desc: "40 target practice sessions. Track completion and CEFR progression.",
+    records: function(){ return state.speaking.sessions; },
+    addLabel: "Add session", recordType: "session", defaultMax: null, numLabel: "Session #",
+    accent: SKILL_ACCENT.speaking
+  });
+  else if(id === "writing") renderWritingPage();
+  else if(id === "history") renderHistory();
+  else if(id === "settings") renderSettings();
+}
+
+function renderAll(){
+  checkAchievements();
+  renderDashboard();
+  if(currentPage !== "dashboard") renderPage(currentPage);
+  buildNav();
+}
+
+function initApp(){
+  checkAchievements();
+  currentPage = "dashboard";
+  buildNav();
+  goToPage("dashboard");
+}
+
+/* ============================================================
+   BOOT
+============================================================ */
+function boot(){
+  state = loadState();
+  initApp();
+}
+
+boot();
+
+})();
+</script>
+</body>
+</html>
